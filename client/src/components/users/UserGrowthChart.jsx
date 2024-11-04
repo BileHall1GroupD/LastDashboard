@@ -1,5 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { motion } from "framer-motion";
+import React from "react";
 
 const userGrowthData = [
 	{ month: "Jan", users: 1000 },

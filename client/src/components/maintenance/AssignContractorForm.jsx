@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const AssignContractorModal = ({ show, closeModal, requestId, refreshData }) => {
+const AssignContractorModal = ({ show, closeModal, requestId, tenantId, refreshData }) => {
   const [contractors, setContractors] = useState([]);
   const [contractorId, setContractorId] = useState('');
+  const [tenant, setTenant] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -17,10 +18,21 @@ const AssignContractorModal = ({ show, closeModal, requestId, refreshData }) => 
         }
       };
 
+      const fetchTenant = async () => {
+        try {
+          const response = await axios.get(`http://localhost:3000/api/tenants/${tenantId}`);
+          setTenant(response.data);
+          console.log('Fetched tenant data:', response.data.data);
+        } catch (error) {
+          console.error('Error fetching tenant details:', error);
+        }
+      };
+
       fetchContractors();
-      setContractorId(''); // Clear contractorId when modal opens
+      fetchTenant();
+      setContractorId('');
     }
-  }, [show]);
+  }, [show, tenantId]);
 
   const handleContractorChange = (e) => {
     setContractorId(e.target.value);
@@ -49,7 +61,7 @@ const AssignContractorModal = ({ show, closeModal, requestId, refreshData }) => 
               user: 'Bile2024',
               pass: 'Bile@2024@',
               rec: contractorPhone,
-              cont: 'You have been assigned a new maintenance request. Please check the system for details.',
+              cont: `You have been assigned a new maintenance request for tenant at ${tenant.address}. Tenant's phone: ${tenant.phoneNumber}. Please connect with the tenant.`,
             },
           });
           console.log("SMS sent successfully:", smsResponse.data);
@@ -63,7 +75,7 @@ const AssignContractorModal = ({ show, closeModal, requestId, refreshData }) => 
 
       alert("Contractor assigned successfully");
       closeModal();
-      refreshData(); // Refresh the data in the main table
+      refreshData();
     } catch (error) {
       console.error("Error assigning contractor:", error.message);
       alert("Failed to assign contractor. Please try again.");

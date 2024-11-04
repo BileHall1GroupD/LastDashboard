@@ -1,3 +1,4 @@
+import React from "react";
 import Header from "../components/common/Header";
 import TenantHistory from "../components/Tenants_history/TenantHistory";
 

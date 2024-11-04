@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
-
+import React from "react";
 const userData = [
 	{ id: 1, name: "John Doe", email: "john@example.com", role: "Customer", status: "Active" },
 	{ id: 2, name: "Jane Smith", email: "jane@example.com", role: "Admin", status: "Active" },

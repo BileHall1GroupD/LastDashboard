@@ -7,7 +7,7 @@ import UsersTable from "../components/users/UsersTable";
 import UserGrowthChart from "../components/users/UserGrowthChart";
 import UserActivityHeatmap from "../components/users/UserActivityHeatmap";
 import UserDemographicsChart from "../components/users/UserDemographicsChart";
-
+import React from "react";
 const userStats = {
 	totalUsers: 152845,
 	newUsersToday: 243,

@@ -4,7 +4,7 @@ import StatCard from "../components/common/StatCard";
 import { DollarSign, ShoppingCart, TrendingUp, CreditCard } from "lucide-react";
 import TenantTable from "../components/Tenant/TenantTable";
 
-
+import React from "react";
 
 const TenantsPage = () => {
 	return (

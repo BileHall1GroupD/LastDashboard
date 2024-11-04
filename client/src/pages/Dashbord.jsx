@@ -1,3 +1,4 @@
+import React from "react";
 import { BarChart2, ShoppingBag, Users, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 

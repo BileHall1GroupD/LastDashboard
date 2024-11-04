@@ -37,27 +37,26 @@ app.use('/api', propertRoute);
 app.use('/api', useTenants);
 app.use('/api', useContractor);
 app.use('/api', usemantaintence);
-app.get('/send-sms', async (req, res) => {
+app.get('/api/sendsms', async (req, res) => {
   try {
-    const { rec, cont } = req.query;
     const response = await axios.get(`https://tabaarakict.so/SendSMS.aspx`, {
       params: {
-        user: 'Bile2024',
-        pass: 'Bile@2024@',
-        rec,
-        cont,
+        user: req.query.user,
+        pass: req.query.pass,
+        rec: req.query.rec,
+        cont: req.query.cont,
       },
     });
-    res.json({ success: true, data: response.data });
+    res.json(response.data); // Forward response to frontend
   } catch (error) {
-    console.error('Error sending SMS:', error.message); // Log error
-    res.status(500).json({ success: false, error: error.message });
+    console.error("Error sending SMS:", error.message);
+    res.status(500).json({ error: "Failed to send SMS" });
   }
 });
 
 
 app.listen(port, () => {
-  connectDb('mongodb://localhost:27017/PMS');
+  connectDb('mongodb://localhost:27017/property_managemant');
   console.log(`Server is running on port ${port}`);
 });
 

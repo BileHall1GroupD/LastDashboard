@@ -122,18 +122,7 @@ export function AddTenant() {
                         required
                       />
                     </div>
-                    <div>
-                      <label className="text-gray-300">Email</label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="block w-full py-2 px-3 bg-gray-700 border border-gray-600 rounded-md text-gray-200"
-                        placeholder="Email address"
-                        required
-                      />
-                    </div>
+                   
                     <div>
                       <label className="text-base font-medium text-gray-300">Select Property</label>
                       <select
@@ -160,6 +149,18 @@ export function AddTenant() {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-300">Lease Details</h3>
                   <div className="space-y-4 mt-4">
+                  <div>
+                      <label className="text-gray-300">Email</label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="block w-full py-2 px-3 bg-gray-700 border border-gray-600 rounded-md text-gray-200"
+                        placeholder="Email address"
+                        required
+                      />
+                    </div>
                     <div>
                       <label className="text-gray-300">Address</label>
                       <input
