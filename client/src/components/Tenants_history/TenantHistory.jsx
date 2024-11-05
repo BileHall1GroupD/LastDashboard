@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Search } from 'lucide-react';
+import Papa from 'papaparse';
+import { saveAs } from 'file-saver';
 
 const TenantHistory = () => {
   const [tenants, setTenants] = useState([]);
@@ -11,7 +13,7 @@ const TenantHistory = () => {
   useEffect(() => {
     const fetchTenantHistory = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/tenants'); 
+        const response = await axios.get('http://localhost:3000/api/tenants');
         setTenants(response.data);
         setFilteredTenants(response.data);
       } catch (error) {
@@ -24,13 +26,37 @@ const TenantHistory = () => {
   const handleSearch = (e) => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
-    const filtered = tenants.filter(
-      (tenant) =>
-        tenant.name.toLowerCase().includes(term) ||
-        tenant.email.toLowerCase().includes(term) ||
-        tenant.property?.name.toLowerCase().includes(term)
+
+    const filtered = tenants.filter((tenant) =>
+      tenant.name.toLowerCase().includes(term) ||
+      tenant.phoneNumber?.toLowerCase().includes(term) ||
+      tenant.property?.name.toLowerCase().includes(term) ||
+      tenant.address?.toLowerCase().includes(term) ||
+      (tenant.lease?.startDate ? new Date(tenant.lease.startDate).toLocaleDateString().toLowerCase() : '').includes(term) ||
+      (tenant.lease?.endDate ? new Date(tenant.lease.endDate).toLocaleDateString().toLowerCase() : '').includes(term) ||
+      tenant.paymentStatus?.toLowerCase().includes(term) ||
+      (tenant.declined ? 'yes' : 'no').includes(term)
     );
+
     setFilteredTenants(filtered);
+  };
+
+  const generateReport = () => {
+    const csv = Papa.unparse(
+      filteredTenants.map((tenant) => ({
+        name: tenant.name,
+        phoneNumber: tenant.phoneNumber || 'N/A',
+        propertyName: tenant.property?.name || 'N/A',
+        address: tenant.address || 'N/A',
+        startDate: tenant.lease?.startDate ? new Date(tenant.lease.startDate).toISOString().split('T')[0] : 'N/A',
+        endDate: tenant.lease?.endDate ? new Date(tenant.lease.endDate).toISOString().split('T')[0] : 'N/A',
+        paymentStatus: tenant.paymentStatus || 'N/A',
+        declined: tenant.declined ? 'Yes' : 'No',
+      }))
+    );
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    saveAs(blob, 'TenantHistoryReport.csv');
   };
 
   return (
@@ -53,6 +79,12 @@ const TenantHistory = () => {
           <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
         </div>
       </div>
+      <button
+        onClick={generateReport}
+        className="bg-blue-600 text-white px-4 py-2 rounded-md mb-4 hover:bg-blue-700 transition-colors"
+      >
+        Generate Report
+      </button>
 
       {filteredTenants.length > 0 ? (
         <div className="overflow-x-auto">
@@ -61,6 +93,7 @@ const TenantHistory = () => {
               <thead className="bg-gray-900">
                 <tr>
                   <th className="w-1/8 px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Name</th>
+                  <th className="w-1/8 px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Phone Number</th>
                   <th className="w-1/8 px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Property Name</th>
                   <th className="w-1/8 px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Address</th>
                   <th className="w-1/8 px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Lease Start</th>
@@ -79,15 +112,16 @@ const TenantHistory = () => {
                     transition={{ duration: 0.3 }}
                   >
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">{tenant.name}</td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">{tenant.phoneNumber || 'N/A'}</td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">{tenant.property?.name || 'N/A'}</td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">{tenant.address}</td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">{tenant.address || 'N/A'}</td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">
-                      {tenant.lease.startDate ? new Date(tenant.lease.startDate).toLocaleDateString() : 'N/A'}
+                      {tenant.lease?.startDate ? new Date(tenant.lease.startDate).toLocaleDateString() : 'N/A'}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">
-                      {tenant.lease.endDate ? new Date(tenant.lease.endDate).toLocaleDateString() : 'N/A'}
+                      {tenant.lease?.endDate ? new Date(tenant.lease.endDate).toLocaleDateString() : 'N/A'}
                     </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">{tenant.paymentStatus}</td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">{tenant.paymentStatus || 'N/A'}</td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">{tenant.declined ? 'Yes' : 'No'}</td>
                   </motion.tr>
                 ))}

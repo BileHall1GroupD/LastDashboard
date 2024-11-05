@@ -1,3 +1,4 @@
+
 import express from "express";
 import userRoutes from "./routes/User.js";
 import { connectDb } from "./config/Db.js";
@@ -11,6 +12,20 @@ import useContractor from "./routes/Contractor.js";
 import usemantaintence from "./routes/maintainance.js";
 import usecity from "./routes/City.js";
 import statsRoutes from "./routes/statsRoutes.js";
+
+
+import express from 'express';
+import userRoutes from './routes/User.js';
+import { connectDb } from './config/Db.js';
+import cors from 'cors';
+import propertRoute from './routes/properties.js';
+import fileUpload from 'express-fileupload';
+import dotenv from 'dotenv';
+import { v2 as cloudinary } from 'cloudinary';
+import useTenants from './routes/tenant.js'
+import useContractor from './routes/Contractor.js'
+import usemantaintence from './routes/maintainance.js'
+import useReport  from './routes/Report.js'
 
 dotenv.config();
 
@@ -34,6 +49,7 @@ app.use(fileUpload({ useTempFiles: true }));
 app.use(express.json());
 
 // Use defined routes
+
 app.use("/api", userRoutes);
 app.use("/api", propertRoute);
 app.use("/api", useTenants);
@@ -58,6 +74,14 @@ app.get("/api/sendsms", async (req, res) => {
     res.status(500).json({ error: "Failed to send SMS" });
   }
 });
+app.use('/api', userRoutes);
+app.use('/api', propertRoute);
+app.use('/api', useTenants);
+app.use('/api', useContractor);
+app.use('/api', usemantaintence);
+app.use('/api',useReport)
+
+
 
 app.listen(port, () => {
   connectDb("mongodb://localhost:27017/property_managemant");

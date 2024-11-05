@@ -1,4 +1,5 @@
 import Tenant from '../model/Tenants.js';
+import { sendSms } from '../utilities/Sms.js'; // Ensure this is the correct path to your SMS utility
 
 // Create a new tenant
 export const createTenant = async (req, res) => {
@@ -21,9 +22,9 @@ export const getAllTenants = async (req, res) => {
   }
 };
 
-export const getAllnonDeclined= async (req, res) => {
+export const getAllnonDeclined = async (req, res) => {
   try {
-    const tenants = await Tenant.find({declined:false}).populate('property', 'name'); // Only fetches property name
+    const tenants = await Tenant.find({ declined: false }).populate('property', 'name'); // Only fetches property name
     res.status(200).json(tenants);
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving tenants', error });
@@ -66,8 +67,15 @@ export const declineTenantLease = async (req, res) => {
     tenant.lease.endDate = new Date();
     await tenant.save();
 
+    // Prepare SMS content
+    const smsContent = `Dear ${tenant.name}, your lease has been declined. Please contact property management for further details.`;
+
+    // Send SMS notification
+    await sendSms(tenant.phoneNumber, smsContent); // Ensure tenant has a phoneNumber field
+
     res.status(200).json({ message: 'Lease declined successfully', tenant });
   } catch (error) {
+    console.error('Error declining lease:', error.message);
     res.status(500).json({ message: 'Error declining lease', error });
   }
 };

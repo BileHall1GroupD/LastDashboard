@@ -65,14 +65,23 @@ export function EditTenant() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:3000/api/tenants/${id}`, {
-        ...formState,
-        lease: {
-          startDate: formState.startDate,
-          endDate: formState.endDate,
-          terms: formState.terms,
-        },
-      });
+      // If the lease is declined, call the decline endpoint
+      if (formState.declined) {
+        await axios.patch(`http://localhost:3000/api/tenants/${id}/decline`, {
+          declined: true,
+        });
+      } else {
+        // Update tenant details including lease information
+        await axios.put(`http://localhost:3000/api/tenants/${id}`, {
+          ...formState,
+          lease: {
+            startDate: formState.startDate,
+            endDate: formState.endDate,
+            terms: formState.terms,
+          },
+        });
+      }
+
       alert('Tenant updated successfully');
       navigate('/tenants');
     } catch (error) {

@@ -8,13 +8,12 @@ const TenantTable = () => {
   const [tenants, setTenants] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredTenants, setFilteredTenants] = useState([]);
-  const [isEditing, setIsEditing] = useState(false); // New state to track edit mode
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/getAllnonDeclined');
+        const response = await axios.get('http://localhost:3000/api/tenants');
         setTenants(response.data);
         setFilteredTenants(response.data); 
       } catch (error) {
@@ -29,12 +28,10 @@ const TenantTable = () => {
   };
 
   const handleEditClick = (tenant) => {
-    setIsEditing(true); // Set edit mode to true
     navigate(`/EditTenant/${tenant._id}`);
   };
 
   const handleDelete = async (id) => {
-    if (!id) return;
     const isConfirmed = window.confirm("Are you sure you want to delete this tenant?");
     if (!isConfirmed) return;
     try {
@@ -59,10 +56,23 @@ const TenantTable = () => {
     setFilteredTenants(filtered);
   };
 
-  // If editing, do not render the table
-  if (isEditing) {
-    return null;
-  }
+  const handleDeclineClick = async (tenant) => {
+    const isConfirmed = window.confirm("Are you sure you want to decline this tenant's lease?");
+    if (!isConfirmed) return;
+    try {
+      await axios.patch(`http://localhost:3000/api/tenants/${tenant._id}/decline`);
+      setTenants((prevTenants) => 
+        prevTenants.map((t) => (t._id === tenant._id ? { ...t, declined: true } : t))
+      );
+      setFilteredTenants((prevTenants) => 
+        prevTenants.map((t) => (t._id === tenant._id ? { ...t, declined: true } : t))
+      );
+      alert('Lease declined successfully and SMS sent.');
+    } catch (error) {
+      console.error('Error declining tenant:', error);
+      alert('Failed to decline the tenant lease.');
+    }
+  };
 
   return (
     <motion.div
@@ -136,7 +146,7 @@ const TenantTable = () => {
                       </button>
                       <button
                         className="text-red-400 hover:text-red-300"
-                        onClick={() => handleDelete(tenant._id)}
+                        onClick={() => handleDeclineClick(tenant)} // Handle decline
                       >
                         <Trash2 size={18} />
                       </button>
