@@ -21,7 +21,7 @@ const AssignContractorModal = ({ show, closeModal, requestId, tenantId, refreshD
       const fetchTenant = async () => {
         try {
           const response = await axios.get(`http://localhost:3000/api/tenants/${tenantId}`);
-          setTenant(response.data);
+          setTenant(response.data.data);
           console.log('Fetched tenant data:', response.data.data);
         } catch (error) {
           console.error('Error fetching tenant details:', error);
@@ -48,30 +48,6 @@ const AssignContractorModal = ({ show, closeModal, requestId, tenantId, refreshD
         contractorId,
         assignmentDate: new Date(),
       });
-
-      // Fetch contractor details for SMS
-      const selectedContractor = contractors.find((c) => c._id === contractorId);
-      const contractorPhone = selectedContractor ? selectedContractor.phone : null;
-
-      if (contractorPhone) {
-        try {
-          // Send SMS
-          const smsResponse = await axios.get(`https://tabaarakict.so/SendSMS.aspx`, {
-            params: {
-              user: 'Bile2024',
-              pass: 'Bile@2024@',
-              rec: contractorPhone,
-              cont: `You have been assigned a new maintenance request for tenant at ${tenant.address}. Tenant's phone: ${tenant.phoneNumber}. Please connect with the tenant.`,
-            },
-          });
-          console.log("SMS sent successfully:", smsResponse.data);
-        } catch (smsError) {
-          console.error("Error sending SMS:", smsError.message);
-          alert("Failed to send SMS notification to the contractor.");
-        }
-      } else {
-        console.warn("Contractor phone number is not available.");
-      }
 
       alert("Contractor assigned successfully");
       closeModal();

@@ -65,7 +65,7 @@ export function AddTenant() {
         property: formData.propertyId,
         lease: {
           terms: formData.terms,
-          startDate: Date.now(), // Set startDate to the current date
+          startDate: Date.now(), 
         },
         paymentStatus: formData.paymentStatus,
       });

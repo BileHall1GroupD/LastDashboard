@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import Header from '../common/Header'; // Assuming your Header component is in the common folder
+import Header from '../common/Header'; 
 
 export function EditProperty() {
   const [formState, setFormState] = useState({

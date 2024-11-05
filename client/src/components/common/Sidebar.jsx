@@ -18,6 +18,7 @@ const SIDEBAR_ITEMS = [
 	{ name: "Maintenance", icon: TrendingUp, color: "#3B82F6", href: "/maintenance" },
 	{ name: "Users", icon: Users, color: "#EC4899", href: "/users" },
 	{ name: "TenantsHistory", icon: Settings, color: "#6EE7B7", href: "/TenantsHistory" },
+	{ name: "Report", icon: Settings, color: "#6EE7B7", href: "/Report" },
 ];
 
 const Sidebar = () => {

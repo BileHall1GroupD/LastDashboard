@@ -17,6 +17,8 @@ import MaintenanceTable from "./components/maintenance/MaintenanceTable";
 import AddMaintenance from "./components/maintenance/AddMaintenance";
 import TenantsPage from "./pages/Tenants";
 import TenantsHistory from "./pages/TeanatHistory";
+import ReportPage from './pages/Report';
+import GenerateReport from './components/Report/GenarateReport';
 
 function App() {
   return (
@@ -38,6 +40,8 @@ function App() {
         <Route path="/Addmaintenance" element={<AddMaintenance />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
         <Route path="/TenantsHistory" element={<TenantsHistory />} />
+        < Route path='/Report' element={<ReportPage/>}/>
+        <Route path="/generate-report" element={<GenerateReport />} />
       </Route>
     </Routes>
   );

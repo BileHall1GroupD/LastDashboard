@@ -9,7 +9,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import useTenants from './routes/tenant.js'
 import useContractor from './routes/Contractor.js'
 import usemantaintence from './routes/maintainance.js'
-
+import useReport  from './routes/Report.js'
 dotenv.config();
 
 // Cloudinary Configuration
@@ -37,22 +37,8 @@ app.use('/api', propertRoute);
 app.use('/api', useTenants);
 app.use('/api', useContractor);
 app.use('/api', usemantaintence);
-app.get('/api/sendsms', async (req, res) => {
-  try {
-    const response = await axios.get(`https://tabaarakict.so/SendSMS.aspx`, {
-      params: {
-        user: req.query.user,
-        pass: req.query.pass,
-        rec: req.query.rec,
-        cont: req.query.cont,
-      },
-    });
-    res.json(response.data); // Forward response to frontend
-  } catch (error) {
-    console.error("Error sending SMS:", error.message);
-    res.status(500).json({ error: "Failed to send SMS" });
-  }
-});
+app.use('/api',useReport)
+
 
 
 app.listen(port, () => {
