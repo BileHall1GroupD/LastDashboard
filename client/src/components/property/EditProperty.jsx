@@ -1,14 +1,7 @@
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../common/Header";
-=======
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useNavigate, useParams } from 'react-router-dom';
-import Header from '../common/Header'; 
-
 
 export function EditProperty() {
   const [formState, setFormState] = useState({

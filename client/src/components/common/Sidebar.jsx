@@ -14,7 +14,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 const SIDEBAR_ITEMS = [
-
   {
     name: "Dashboard",
     icon: BarChart2,
@@ -44,20 +43,7 @@ const SIDEBAR_ITEMS = [
     href: "/TenantsHistory",
   },
 
-	{
-		name: "Dashboard",
-		icon: BarChart2,
-		color: "#6366f1",
-		href: "/dashboard",
-	},
-	{ name: "Property", icon: ShoppingBag, color: "#8B5CF6", href: "/property" },
-	{ name: "Tenants", icon: DollarSign, color: "#10B981", href: "/Tenants" },
-	{ name: "Contactors", icon: ShoppingCart, color: "#F59E0B", href: "/Contactors" },
-	{ name: "Maintenance", icon: TrendingUp, color: "#3B82F6", href: "/maintenance" },
-	{ name: "Users", icon: Users, color: "#EC4899", href: "/users" },
-	{ name: "TenantsHistory", icon: Settings, color: "#6EE7B7", href: "/TenantsHistory" },
-	{ name: "Report", icon: Settings, color: "#6EE7B7", href: "/Report" },
-
+  { name: "Report", icon: Settings, color: "#6EE7B7", href: "/Report" },
 ];
 
 const Sidebar = () => {
