@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import { Route, Routes } from "react-router-dom";
 import DashboardLayout from "./components/DashboardLayout";
 import Login from "./pages/login";
@@ -17,8 +17,15 @@ import MaintenanceTable from "./components/maintenance/MaintenanceTable";
 import AddMaintenance from "./components/maintenance/AddMaintenance";
 import TenantsPage from "./pages/Tenants";
 import TenantsHistory from "./pages/TeanatHistory";
+
+import City from "./pages/City";
+import CityTable from "./components/City/CityTables";
+import AddCity from "./components/City/AddCity";
+import EditCity from "./components/City/EditCity"; // Adjust the path as necessary
+
 import ReportPage from './pages/Report';
 import GenerateReport from './components/Report/GenarateReport';
+
 
 function App() {
   return (
@@ -40,8 +47,17 @@ function App() {
         <Route path="/Addmaintenance" element={<AddMaintenance />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
         <Route path="/TenantsHistory" element={<TenantsHistory />} />
+
+        <Route path="/City" element={<City />} />
+        <Route path="/CityTable" element={<CityTable />} />
+        <Route path="/AddCity" element={<AddCity />} />
+        {/* Add more routes as needed */}
+        {/* <Route path="/EditCity/:id" element={<EditCity />} /> */}
+        <Route path="/EditCity/:id" element={<EditCity />} />
+
         < Route path='/Report' element={<ReportPage/>}/>
         <Route path="/generate-report" element={<GenerateReport />} />
+
       </Route>
     </Routes>
   );
