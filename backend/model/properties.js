@@ -14,6 +14,7 @@ const propertySchema = new mongoose.Schema(
     type: { type: String, required: true, enum: ['House', 'Apartment', 'Commercial'] },
     rent_type: { type: String, required: true, enum: ['month', '3-month', '6-month','9-month','yearly'] },
     city: { type: String, required: true },
+    rentAmount: { type: Number, required: true },
     neighborhood: { type: String, required: false },
     isRented: { type: Boolean, default: false }, 
   },

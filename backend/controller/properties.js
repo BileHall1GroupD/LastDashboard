@@ -4,7 +4,7 @@ import cloudinary from 'cloudinary';
 // Create a new Property
 export const createProperty = async (req, res) => {
   try {
-    const { name, description, location, square_footage, bedrooms, bathrooms, features, image_url, type, rent_type,city, neighborhood, isRented } = req.body;
+    const { name, description, location, square_footage, bedrooms, bathrooms, features, image_url, type, rent_type,city,rentAmount, neighborhood, isRented } = req.body;
 
     const newProperty = new Property({
       name,
@@ -18,6 +18,7 @@ export const createProperty = async (req, res) => {
       type,
       city,
       rent_type,
+      rentAmount,
       neighborhood,
       isRented: isRented || false,
     });

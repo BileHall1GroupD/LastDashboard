@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { Search } from 'lucide-react';
 import Papa from 'papaparse';
 import { saveAs } from 'file-saver';
 
 const TenantHistory = () => {
   const [tenants, setTenants] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [filteredTenants, setFilteredTenants] = useState([]);
+  const [paymentFilter, setPaymentFilter] = useState("All");
+  const [declineFilter, setDeclineFilter] = useState("All");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchTenantHistory = async () => {
@@ -23,23 +26,40 @@ const TenantHistory = () => {
     fetchTenantHistory();
   }, []);
 
-  const handleSearch = (e) => {
-    const term = e.target.value.toLowerCase();
-    setSearchTerm(term);
+  const handleFilterChange = () => {
+    let filtered = tenants;
 
-    const filtered = tenants.filter((tenant) =>
-      tenant.name.toLowerCase().includes(term) ||
-      tenant.phoneNumber?.toLowerCase().includes(term) ||
-      tenant.property?.name.toLowerCase().includes(term) ||
-      tenant.address?.toLowerCase().includes(term) ||
-      (tenant.lease?.startDate ? new Date(tenant.lease.startDate).toLocaleDateString().toLowerCase() : '').includes(term) ||
-      (tenant.lease?.endDate ? new Date(tenant.lease.endDate).toLocaleDateString().toLowerCase() : '').includes(term) ||
-      tenant.paymentStatus?.toLowerCase().includes(term) ||
-      (tenant.declined ? 'yes' : 'no').includes(term)
-    );
+    if (paymentFilter !== "All") {
+      filtered = filtered.filter(tenant => tenant.paymentStatus === paymentFilter);
+    }
+
+    if (declineFilter !== "All") {
+      filtered = filtered.filter(tenant => (tenant.declined ? 'Yes' : 'No') === declineFilter);
+    }
+
+    if (startDate) {
+      filtered = filtered.filter(tenant => tenant.lease?.startDate && new Date(tenant.lease.startDate) >= new Date(startDate));
+    }
+
+    if (endDate) {
+      filtered = filtered.filter(tenant => tenant.lease?.endDate && new Date(tenant.lease.endDate) <= new Date(endDate));
+    }
+
+    if (searchTerm) {
+      filtered = filtered.filter(
+        tenant =>
+          tenant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (tenant.phoneNumber && tenant.phoneNumber.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (tenant.address && tenant.address.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+    }
 
     setFilteredTenants(filtered);
   };
+
+  useEffect(() => {
+    handleFilterChange();
+  }, [paymentFilter, declineFilter, startDate, endDate, searchTerm]);
 
   const generateReport = () => {
     const csv = Papa.unparse(
@@ -48,10 +68,10 @@ const TenantHistory = () => {
         phoneNumber: tenant.phoneNumber || 'N/A',
         propertyName: tenant.property?.name || 'N/A',
         address: tenant.address || 'N/A',
-        startDate: tenant.lease?.startDate ? new Date(tenant.lease.startDate).toISOString().split('T')[0] : 'N/A',
-        endDate: tenant.lease?.endDate ? new Date(tenant.lease.endDate).toISOString().split('T')[0] : 'N/A',
+        leaseStart: tenant.lease?.startDate ? new Date(tenant.lease.startDate).toISOString().split('T')[0] : 'N/A',
+        leaseEnd: tenant.lease?.endDate ? new Date(tenant.lease.endDate).toISOString().split('T')[0] : 'N/A',
         paymentStatus: tenant.paymentStatus || 'N/A',
-        declined: tenant.declined ? 'Yes' : 'No',
+        declined: tenant.declined ? 'Yes' : 'No'
       }))
     );
 
@@ -67,24 +87,61 @@ const TenantHistory = () => {
       transition={{ delay: 0.2 }}
     >
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-100">Tenant History</h2>
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search tenants..."
-            className="bg-gray-700 text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onChange={handleSearch}
-            value={searchTerm}
-          />
-          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-        </div>
+        
+        <input
+          type="text"
+          placeholder="Search by Name, Phone, Address"
+          className="bg-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none mx-4"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        
+        <button
+          onClick={generateReport}
+          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+        >
+          Generate Report
+        </button>
       </div>
-      <button
-        onClick={generateReport}
-        className="bg-blue-600 text-white px-4 py-2 rounded-md mb-4 hover:bg-blue-700 transition-colors"
-      >
-        Generate Report
-      </button>
+      
+      <div className="flex space-x-4 mb-4">
+        <select
+          className="bg-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none"
+          value={paymentFilter}
+          onChange={(e) => setPaymentFilter(e.target.value)}
+        >
+          <option value="All">All Payment Status</option>
+          <option value="Due">Due</option>
+          <option value="Paid">Paid</option>
+          <option value="Overdue">Overdue</option>
+        </select>
+
+        <select
+          className="bg-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none"
+          value={declineFilter}
+          onChange={(e) => setDeclineFilter(e.target.value)}
+        >
+          <option value="All">Declined: All</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+
+        <input
+          type="date"
+          className="bg-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none"
+          placeholder="Start Date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+        />
+
+        <input
+          type="date"
+          className="bg-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none"
+          placeholder="End Date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+        />
+      </div>
 
       {filteredTenants.length > 0 ? (
         <div className="overflow-x-auto">

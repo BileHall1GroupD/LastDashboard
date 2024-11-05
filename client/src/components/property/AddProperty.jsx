@@ -17,7 +17,7 @@ export function AddPropertyForm() {
     imageFile: null,
     type: "House",
     city: "",
-    neighborhood: "",
+    rentAmount:"",
     rent_type: "month",
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -267,14 +267,14 @@ export function AddPropertyForm() {
                       </select>
                     </div>
                     <div>
-                      <label className="text-gray-300">Neighborhood</label>
+                      <label className="text-gray-300">rentAmount</label>
                       <input
                         type="text"
-                        name="neighborhood"
-                        value={formData.neighborhood}
+                        name="rentAmount"
+                        value={formData.rentAmount}
                         onChange={handleChange}
                         className="block w-full py-2 px-3 bg-gray-700 border border-gray-600 rounded-md text-gray-200"
-                        placeholder="Neighborhood"
+                        placeholder="rentAmount"
                         required
                       />
                     </div>

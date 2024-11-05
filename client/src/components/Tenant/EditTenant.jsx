@@ -65,11 +65,19 @@ export function EditTenant() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // If the lease is declined, call the decline endpoint
+      // If the lease is declined, call the decline endpoint and set the property to available
       if (formState.declined) {
         await axios.patch(`http://localhost:3000/api/tenants/${id}/decline`, {
           declined: true,
+          endDate: formState.endDate,
         });
+
+        // Update property to set `rented` to false
+        if (formState.property) {
+          await axios.put(`http://localhost:3000/api/property/${formState.property}`, {
+            isRented: false,
+          });
+        }
       } else {
         // Update tenant details including lease information
         await axios.put(`http://localhost:3000/api/tenants/${id}`, {
