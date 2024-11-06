@@ -9,6 +9,7 @@ export function AddCity() {
     postcode: "",
     state: "",
   });
+  const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -18,9 +19,33 @@ export function AddCity() {
       ...prevData,
       [name]: value,
     }));
+    // Clear error message for the current field
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "", // Reset error message for current field
+    }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    // Validate City Name
+    if (!formData.name) {
+      newErrors.name = "City name is required.";
+    }
+    // Validate Postcode
+    if (!formData.postcode) {
+      newErrors.postcode = "Postcode is required.";
+    }
+    // Validate State
+    if (!formData.state) {
+      newErrors.state = "State is required.";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // Return true if no errors
   };
 
   const handleSubmit = async () => {
+    if (!validateForm()) return; // Stop if validation fails
     setIsLoading(true);
     try {
       await axios.post("http://localhost:3000/api/cities", {
@@ -62,6 +87,9 @@ export function AddCity() {
                     placeholder="City name"
                     required
                   />
+                  {errors.name && (
+                    <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+                  )}
                 </div>
                 <div>
                   <label className="text-gray-300">Postcode</label>
@@ -74,6 +102,11 @@ export function AddCity() {
                     placeholder="City postcode"
                     required
                   />
+                  {errors.postcode && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.postcode}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="text-gray-300">State</label>
@@ -86,6 +119,9 @@ export function AddCity() {
                     placeholder="State"
                     required
                   />
+                  {errors.state && (
+                    <p className="text-red-500 text-sm mt-1">{errors.state}</p>
+                  )}
                 </div>
               </div>
 

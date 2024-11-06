@@ -1,3 +1,6 @@
+import usecity from "./routes/City.js";
+import statsRoutes from "./routes/statsRoutes.js";
+
 
 import usecity from "./routes/City.js";
 import statsRoutes from "./routes/statsRoutes.js";
@@ -13,6 +16,7 @@ import useTenants from './routes/tenant.js'
 import useContractor from './routes/Contractor.js'
 import usemantaintence from './routes/maintainance.js'
 import useReport  from './routes/Report.js'
+
 
 dotenv.config();
 
@@ -61,14 +65,12 @@ app.get("/api/sendsms", async (req, res) => {
     res.status(500).json({ error: "Failed to send SMS" });
   }
 });
-app.use('/api', userRoutes);
-app.use('/api', propertRoute);
-app.use('/api', useTenants);
-app.use('/api', useContractor);
-app.use('/api', usemantaintence);
-app.use('/api',useReport)
-
-
+app.use("/api", userRoutes);
+app.use("/api", propertRoute);
+app.use("/api", useTenants);
+app.use("/api", useContractor);
+app.use("/api", usemantaintence);
+app.use("/api", useReport);
 
 app.listen(port, () => {
   connectDb("mongodb://localhost:27017/property_managemant");
