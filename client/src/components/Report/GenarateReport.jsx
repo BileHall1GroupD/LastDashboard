@@ -44,7 +44,7 @@ const GenerateReport = () => {
                     <div>
                         <h1 className="text-2xl font-bold text-indigo-700">Maintenance Report</h1>
                         <p className="text-gray-500">Company Address: Hodan District </p>
-                        <p className="text-gray-500">Phone: +1 555-555-5555</p>
+                        <p className="text-gray-500">Phone: +252 0613775927</p>
                         <p className="text-blue-500">Email: Tabarak@gmail.com</p>
                     </div>
                     <div className="text-right">

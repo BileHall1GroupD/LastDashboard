@@ -113,7 +113,6 @@ const TenantTable = () => {
                   <th className="w-1/8 px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Lease Start</th>
                   <th className="w-1/8 px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Lease End</th>
                   <th className="w-1/8 px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Payment Status</th>
-                  <th className="w-1/8 px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Declined</th>
                   <th className="w-1/12 px-4 py-3 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
@@ -136,7 +135,6 @@ const TenantTable = () => {
                       {tenant.lease.endDate ? new Date(tenant.lease.endDate).toLocaleDateString() : 'N/A'}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">{tenant.paymentStatus}</td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">{tenant.declined ? 'Yes' : 'No'}</td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300 text-center flex gap-2">
                       <button
                         className="text-indigo-400 hover:text-indigo-300"

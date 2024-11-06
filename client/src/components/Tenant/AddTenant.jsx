@@ -22,7 +22,7 @@ export function AddTenant() {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/properties');
+        const response = await axios.get('http://localhost:3000/api/nonrentedProperties');
         setProperties(response.data); 
       } catch (error) {
         console.error('Error fetching properties:', error);

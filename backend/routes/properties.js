@@ -13,7 +13,7 @@ const router = express.Router();
 
 
 router.get('/properties', getProperties);
-router.get('/rentedProperties',getRentedProperties)
+router.get('/nonrentedProperties',getRentedProperties)
 router.get('/property/:id', getPropertyById);
 router.put('/property/:id', updateProperty);
 router.delete('/property/:id', deleteProperty);

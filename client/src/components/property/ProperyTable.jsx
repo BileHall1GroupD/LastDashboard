@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Search, Edit, Trash2 } from "lucide-react";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Search, Edit, Trash2 } from 'lucide-react';
 
 const TableWithActions = () => {
   const [properties, setProperties] = useState([]);
@@ -13,13 +13,11 @@ const TableWithActions = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/properties"
-        );
+        const response = await axios.get('http://localhost:3000/api/properties');
         setProperties(response.data);
         setFilteredProperties(response.data);
       } catch (error) {
-        console.error("Error fetching properties:", error);
+        console.error('Error fetching properties:', error);
       }
     };
     fetchProperties();
@@ -35,21 +33,15 @@ const TableWithActions = () => {
 
   const handleDelete = async (id) => {
     if (!id) return;
-    const isConfirmed = window.confirm(
-      "Are you sure you want to delete this property?"
-    );
+    const isConfirmed = window.confirm("Are you sure you want to delete this property?");
     if (!isConfirmed) return;
     try {
       await axios.delete(`http://localhost:3000/api/property/${id}`);
-      setProperties((prevProperties) =>
-        prevProperties.filter((property) => property._id !== id)
-      );
-      setFilteredProperties((prevProperties) =>
-        prevProperties.filter((property) => property._id !== id)
-      );
+      setProperties((prevProperties) => prevProperties.filter((property) => property._id !== id));
+      setFilteredProperties((prevProperties) => prevProperties.filter((property) => property._id !== id));
     } catch (error) {
-      console.error("Error deleting property:", error);
-      alert("Failed to delete the property.");
+      console.error('Error deleting property:', error);
+      alert('Failed to delete the property.');
     }
   };
 
@@ -94,10 +86,7 @@ const TableWithActions = () => {
 
       {filteredProperties.length > 0 ? (
         <div className="overflow-x-auto">
-          <div
-            className="overflow-y-auto max-h-96"
-            style={{ minWidth: "1000px" }}
-          >
+          <div className="overflow-y-auto max-h-96" style={{ minWidth: '1000px' }}>
             <table className="min-w-full divide-y divide-gray-700">
               <thead className="bg-gray-900">
                 <tr>
@@ -140,20 +129,12 @@ const TableWithActions = () => {
                         className="w-16 h-16 object-cover rounded"
                       />
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{property.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{property.location}</td>     
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{property.type}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{property.city}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                      {property.name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                      {property.location}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                      {property.type}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                      {property.city}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                      {property.rent_status}
+                      {property.isRented ? "Rented" : "Available"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 flex gap-2">
                       <button
@@ -176,9 +157,7 @@ const TableWithActions = () => {
           </div>
         </div>
       ) : (
-        <p className="text-center text-gray-500">
-          No available properties to display.
-        </p>
+        <p className="text-center text-gray-500">No available properties to display.</p>
       )}
     </motion.div>
   );

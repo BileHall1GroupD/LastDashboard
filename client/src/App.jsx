@@ -21,10 +21,11 @@ import TenantsHistory from "./pages/TeanatHistory";
 import City from "./pages/City";
 import CityTable from "./components/City/CityTables";
 import AddCity from "./components/City/AddCity";
-import EditCity from "./components/City/EditCity"; // Adjust the path as necessary
+import EditCity from "./components/City/EditCity"; 
 
 import ReportPage from './pages/Report';
 import GenerateReport from './components/Report/GenarateReport';
+import InvoicePage from "./pages/InvoicePage";
 
 
 function App() {
@@ -50,13 +51,12 @@ function App() {
 
         <Route path="/City" element={<City />} />
         <Route path="/CityTable" element={<CityTable />} />
-        <Route path="/AddCity" element={<AddCity />} />
-        {/* Add more routes as needed */}
-        {/* <Route path="/EditCity/:id" element={<EditCity />} /> */}
+        <Route path="/AddCity" element={<AddCity />} /> 
         <Route path="/EditCity/:id" element={<EditCity />} />
 
         < Route path='/Report' element={<ReportPage/>}/>
         <Route path="/generate-report" element={<GenerateReport />} />
+        <Route path="/invoices" element={<InvoicePage />} /> 
 
       </Route>
     </Routes>
