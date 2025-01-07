@@ -1,72 +1,96 @@
 import Property from "../model/properties.js";
-import cloudinary from 'cloudinary';
+import cloudinary from "cloudinary";
+import { validationResult } from "express-validator";
 
-// Create a new Property
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Create a new property
 export const createProperty = async (req, res) => {
   try {
-    const { name, description, location, square_footage, bedrooms, bathrooms, features, image_url, type, rent_type,city,rentAmount, neighborhood, isRented } = req.body;
+    // Validate request
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: "Validation failed", errors: errors.array() });
+    }
+
+    const { name, description, location, size, image_url, type, rentAmount, isRented } = req.body;
 
     const newProperty = new Property({
       name,
       description,
       location,
-      square_footage,
-      bedrooms,
-      bathrooms,
-      features,
+      size,
       image_url,
       type,
-      city,
-      rent_type,
       rentAmount,
-      neighborhood,
       isRented: isRented || false,
     });
 
     await newProperty.save();
-    res.status(201).json({ message: 'Property registered successfully', data: newProperty });
+    res.status(201).json({ message: "Property created successfully", data: newProperty });
   } catch (error) {
-    console.error('Error in registering property:', error);
-    res.status(500).json({ message: 'Server error', error });
+    console.error("Error creating property:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
-// Upload image
+// Upload an image
 export const uploadImage = async (req, res) => {
   try {
-    const file = req.files.photo.tempFilePath; 
-    const result = await cloudinary.uploader.upload(file);
+    if (!req.files || !req.files.photo) {
+      return res.status(400).json({ message: "No image file provided" });
+    }
+
+    const file = req.files.photo.tempFilePath;
+    const result = await cloudinary.uploader.upload(file, { folder: "properties" });
+
     res.status(200).json({ url: result.secure_url });
   } catch (error) {
-    res.status(500).json({ message: 'Upload failed', error });
+    console.error("Error uploading image:", error);
+    res.status(500).json({ message: "Upload failed", error: error.message });
   }
 };
 
-// Get properties with optional filters
+// Get all properties with filters and pagination
 export const getProperties = async (req, res) => {
   try {
-    const { type, city, neighborhood } = req.query;
+    const { type, page = 1, limit = 10 } = req.query;
     const filter = {};
 
     if (type) filter.type = type;
-    if (city) filter.city = city;
-    if (neighborhood) filter.neighborhood = neighborhood;
 
-    const properties = await Property.find(filter); 
-    res.status(200).json(properties);
+    const properties = await Property.find(filter)
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .exec();
+
+    const count = await Property.countDocuments(filter);
+
+    res.status(200).json({
+      total: count,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      properties,
+    });
   } catch (error) {
-    console.error('Error fetching properties:', error);
-    res.status(500).json({ message: 'Server error', error });
+    console.error("Error fetching properties:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
-}
+};
 
+// Get rented properties
 export const getRentedProperties = async (req, res) => {
   try {
-    const properties = await Property.find({ isRented: false }); 
+    const properties = await Property.find({ isRented: true });
     res.status(200).json(properties);
   } catch (error) {
-    console.error('Error fetching properties:', error);
-    res.status(500).json({ message: 'Server error', error });
+    console.error("Error fetching rented properties:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
@@ -74,12 +98,16 @@ export const getRentedProperties = async (req, res) => {
 export const getPropertyById = async (req, res) => {
   try {
     const { id } = req.params;
+
     const property = await Property.findById(id);
-    if (!property) return res.status(404).json({ message: 'Property not found' });
+    if (!property) {
+      return res.status(404).json({ message: "Property not found" });
+    }
+
     res.status(200).json(property);
   } catch (error) {
-    console.error('Error in fetching property:', error);
-    res.status(500).json({ message: 'Server error', error });
+    console.error("Error fetching property by ID:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
@@ -90,12 +118,14 @@ export const updateProperty = async (req, res) => {
     const updatedData = req.body;
 
     const updatedProperty = await Property.findByIdAndUpdate(id, updatedData, { new: true });
-    if (!updatedProperty) return res.status(404).json({ message: 'Property not found' });
+    if (!updatedProperty) {
+      return res.status(404).json({ message: "Property not found" });
+    }
 
-    res.status(200).json({ message: 'Property updated successfully', data: updatedProperty });
+    res.status(200).json({ message: "Property updated successfully", data: updatedProperty });
   } catch (error) {
-    console.error('Error in updating property:', error);
-    res.status(500).json({ message: 'Server error', error });
+    console.error("Error updating property:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
@@ -105,11 +135,13 @@ export const deleteProperty = async (req, res) => {
     const { id } = req.params;
 
     const deletedProperty = await Property.findByIdAndDelete(id);
-    if (!deletedProperty) return res.status(404).json({ message: 'Property not found' });
+    if (!deletedProperty) {
+      return res.status(404).json({ message: "Property not found" });
+    }
 
-    res.status(200).json({ message: 'Property deleted successfully' });
+    res.status(200).json({ message: "Property deleted successfully" });
   } catch (error) {
-    console.error('Error in deleting property:', error);
-    res.status(500).json({ message: 'Server error', error });
+    console.error("Error deleting property:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };

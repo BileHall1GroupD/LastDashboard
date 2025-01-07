@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Header from '../common/Header';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export function AddContractor() {
     const [step, setStep] = useState(1);
@@ -15,30 +17,55 @@ export function AddContractor() {
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
+    // Handle form field changes
     const handleChange = (e) => {
-        const { name, value, files } = e.target;
+        const { name, value } = e.target;
         setFormData((prevData) => ({
             ...prevData,
-            [name]: files ? files[0] : value,
+            [name]: value,
         }));
     };
 
+    // Navigate to next step
     const nextStep = () => setStep((prev) => prev + 1);
+    // Navigate to previous step
     const prevStep = () => setStep((prev) => prev - 1);
 
+    // Form validation
+    const validateForm = () => {
+        const nameRegex = /^[A-Za-z][A-Za-z0-9\s]*$/; // Name must start with a letter, can include numbers or spaces
+        const skillsRegex = /^[A-Za-z][A-Za-z0-9\s]*$/; // Skills must start with a letter, can include numbers or spaces
+
+        if (!nameRegex.test(formData.name)) {
+            toast.error('Name must start with a letter and may include numbers or spaces.');
+            return false;
+        }
+
+        if (!skillsRegex.test(formData.skills)) {
+            toast.error('Skills must start with a letter and may include numbers or spaces.');
+            return false;
+        }
+
+        return true;
+    };
+
+    // Handle form submission
     const handleSubmit = async () => {
+        if (!validateForm()) {
+            return; // Stop submission if validation fails
+        }
+
         setIsLoading(true);
         try {
             await axios.post('http://localhost:3000/api/contractors', {
                 ...formData,
-              
             });
 
-            alert('Contractor registered successfully');
-            navigate('/Contactors');
+            toast.success('Contractor registered successfully');
+            navigate('/Contractors');
         } catch (error) {
             console.error('Error registering contractor:', error);
-            alert('There was an error submitting the contractor. Please try again.');
+            toast.error('There was an error submitting the contractor. Please try again.');
         } finally {
             setIsLoading(false);
         }
@@ -129,7 +156,6 @@ export function AddContractor() {
                                                 <option value="false">Not Available</option>
                                             </select>
                                         </div>
-                                      
                                     </div>
                                 </div>
                             )}
@@ -168,6 +194,7 @@ export function AddContractor() {
                     </div>
                 </div>
             </section>
+            <ToastContainer /> {/* Add ToastContainer here */}
         </div>
     );
 }

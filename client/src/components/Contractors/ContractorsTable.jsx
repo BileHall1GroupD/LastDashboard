@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Edit, Trash2 } from 'lucide-react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ContractorTableWithActions = () => {
   const [contractors, setContractors] = useState([]);
@@ -19,17 +21,18 @@ const ContractorTableWithActions = () => {
         setFilteredContractors(contractorData);
       } catch (error) {
         console.error('Error fetching contractors:', error);
+        toast.error('Failed to load contractors.');
       }
     };
     fetchContractors();
   }, []);
 
   const handleAddNew = () => {
-    navigate("/AddContactor"); // Corrected spelling
+    navigate("/AddContactor");
   };
   
   const handleEditClick = (contractor) => {
-    navigate(`/EditContactor/${contractor._id}`); // Corrected spelling
+    navigate(`/EditContactor/${contractor._id}`);
   };
   
   const handleDelete = async (id) => {
@@ -40,9 +43,10 @@ const ContractorTableWithActions = () => {
       await axios.delete(`http://localhost:3000/api/contractors/${id}`);
       setContractors((prev) => prev.filter((contractor) => contractor._id !== id));
       setFilteredContractors((prev) => prev.filter((contractor) => contractor._id !== id));
+      toast.success('Contractor deleted successfully');
     } catch (error) {
       console.error('Error deleting contractor:', error);
-      alert('Failed to delete the contractor.');
+      toast.error('Failed to delete the contractor.');
     }
   };
 
@@ -60,7 +64,7 @@ const ContractorTableWithActions = () => {
 
   return (
     <motion.div
-      className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700 mb-8"
+      className="bg-gray-800 bg-opacity-50 scroll-smooth backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700 mb-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
@@ -87,7 +91,7 @@ const ContractorTableWithActions = () => {
 
       {filteredContractors.length > 0 ? (
         <div className="overflow-x-auto">
-          <div className="max-h-80 overflow-y-auto"> {/* Adjust the height here */}
+          <div className="max-h-80 overflow-y-auto">
             <table className="min-w-full divide-y divide-gray-700">
               <thead className="bg-gray-900 sticky top-0">
                 <tr>
@@ -148,6 +152,8 @@ const ContractorTableWithActions = () => {
       ) : (
         <p className="text-center text-gray-500">No available contractors to display.</p>
       )}
+      
+      <ToastContainer />
     </motion.div>
   );
 };

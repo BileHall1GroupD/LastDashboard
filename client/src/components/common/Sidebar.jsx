@@ -12,6 +12,16 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { IoHome } from "react-icons/io5";
+import { MdOutlineFamilyRestroom } from "react-icons/md";
+import { MdOutlineMiscellaneousServices } from "react-icons/md";
+import { MdOutlineDisabledByDefault } from "react-icons/md";
+import { FaUsers } from "react-icons/fa";
+
+
+
+
+
 
 const SIDEBAR_ITEMS = [
   {
@@ -20,12 +30,12 @@ const SIDEBAR_ITEMS = [
     color: "#6366f1",
     href: "/dashboard",
   },
-  { name: "Property", icon: ShoppingBag, color: "#8B5CF6", href: "/property" },
-  { name: "Tenants", icon: DollarSign, color: "#10B981", href: "/Tenants" },
-  { name: "Contactors", icon: ShoppingCart, color: "#F59E0B", href: "/Contactors" },
-  { name: "Maintenance", icon: TrendingUp, color: "#3B82F6", href: "/maintenance" },
-  { name: "Users", icon: Users, color: "#EC4899", href: "/users" },
-  { name: "Invoices", icon: FileText, color: "#3B82F6", href: "/invoices" },
+  { name: "Property", icon: IoHome , color: "#8B5CF6", href: "/property" },
+  { name: "City", icon: FaUsers, color: "#EC4899", href: "/City" },
+  { name: "Tenants", icon: MdOutlineFamilyRestroom, color: "#10B981", href: "/Tenants" },
+  { name: "Contactors", icon: MdOutlineMiscellaneousServices , color: "#F59E0B", href: "/Contactors" },
+  { name: "Maintenance", icon: MdOutlineDisabledByDefault , color: "#3B82F6", href: "/maintenance" },
+  { name: "Users", icon: FaUsers, color: "#EC4899", href: "/Users" },
 
   {
     name: "Report",
@@ -33,7 +43,7 @@ const SIDEBAR_ITEMS = [
     color: "#6EE7B7",
     href: "/Report",
     submenu: [
-      { name: "Tenant History", href: "/TenantsHistory" },
+      { name: "Tenant Report", href: "/TenantsHistory" },
       { name: "Maintenance Report", href: "/Report" },
     ],
   },
@@ -53,13 +63,17 @@ const Sidebar = () => {
 
   return (
     <motion.div
-      className={`relative z-10 transition-all duration-300 ease-in-out flex-shrink-0 ${
+      className={`relative z-10 transition-all duration-300 ease-in-out flex-shrink-0 scroll-smooth${
         isSidebarOpen ? "w-64" : "w-20"
       }`}
       animate={{ width: isSidebarOpen ? 256 : 80 }}
     >
       <div className="h-full bg-gray-800 bg-opacity-50 backdrop-blur-md p-4 flex flex-col border-r border-gray-700">
-        <motion.button
+      
+     
+
+       
+      <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -67,8 +81,10 @@ const Sidebar = () => {
         >
           <Menu size={24} />
         </motion.button>
+     
 
-        <nav className="mt-8 flex-grow">
+        {/* Sidebar Navigation with Scroll */}
+        <nav className="mt-8 flex-grow overflow-y-auto max-h-screen">
           {SIDEBAR_ITEMS.map((item) => (
             <div key={item.name}>
               <Link to={item.href} onClick={() => handleMenuClick(item)}>

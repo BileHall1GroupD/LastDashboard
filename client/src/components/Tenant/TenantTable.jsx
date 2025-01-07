@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Edit, Trash2 } from 'lucide-react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const TenantTable = () => {
   const [tenants, setTenants] = useState([]);
@@ -18,6 +20,7 @@ const TenantTable = () => {
         setFilteredTenants(response.data); 
       } catch (error) {
         console.error('Error fetching tenants:', error);
+        toast.error('Failed to load tenants.');
       }
     };
     fetchTenants();
@@ -36,11 +39,13 @@ const TenantTable = () => {
     if (!isConfirmed) return;
     try {
       await axios.delete(`http://localhost:3000/api/tenants/${id}`);
+      // Update state and ensure toast fires only once
       setTenants((prevTenants) => prevTenants.filter((tenant) => tenant._id !== id));
       setFilteredTenants((prevTenants) => prevTenants.filter((tenant) => tenant._id !== id));
+      toast.success('Tenant deleted successfully.', { toastId: id });
     } catch (error) {
       console.error('Error deleting tenant:', error);
-      alert('Failed to delete the tenant.');
+      toast.error('Failed to delete the tenant.');
     }
   };
 
@@ -67,16 +72,16 @@ const TenantTable = () => {
       setFilteredTenants((prevTenants) => 
         prevTenants.map((t) => (t._id === tenant._id ? { ...t, declined: true } : t))
       );
-      alert('Lease declined successfully and SMS sent.');
+      toast.success('Lease declined successfully and SMS sent.');
     } catch (error) {
       console.error('Error declining tenant:', error);
-      alert('Failed to decline the tenant lease.');
+      toast.error('Failed to decline the tenant lease.');
     }
   };
 
   return (
     <motion.div
-      className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700 mb-8"
+      className="bg-gray-800 bg-opacity-50 backdrop-blur-md max-w-7xl shadow-lg rounded-xl p-6 border border-gray-700 mb-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
@@ -144,7 +149,7 @@ const TenantTable = () => {
                       </button>
                       <button
                         className="text-red-400 hover:text-red-300"
-                        onClick={() => handleDeclineClick(tenant)} // Handle decline
+                        onClick={() => handleDelete(tenant._id)} // Pass tenant._id directly
                       >
                         <Trash2 size={18} />
                       </button>
@@ -158,6 +163,8 @@ const TenantTable = () => {
       ) : (
         <p className="text-center text-gray-500">No available tenants to display.</p>
       )}
+
+      <ToastContainer />
     </motion.div>
   );
 };

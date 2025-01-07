@@ -1,60 +1,53 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import Header from "../common/Header";
+import { toast } from "react-toastify";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
-// Property Management Form Component
-export function AddPropertyForm() {
-  const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    location: "",
-    square_footage: "",
-    bedrooms: 0,
-    bathrooms: 0,
-    features: "",
-    imageFile: null,
-    type: "House",
-    city: "",
-    rentAmount:"",
-    rent_type: "month",
+// Define validation schema using Yup
+const schema = yup.object().shape({
+  name: yup
+    .string()
+    .required("Name is required")
+    .min(3, "Name must be at least 3 characters long")
+    .max(20, "Name cannot exceed 20 characters long")
+    .matches(/^[A-Za-z]/, "Name must start with a letter (A-Z or a-z)"),
+  description: yup
+    .string()
+    .required("Description is required")
+    .min(10, "Description must be at least 10 characters long")
+    .max(200, "Description cannot exceed 200 characters"),
+  location: yup
+    .string()
+    .required("Location is required")
+    .min(3, "Location must be at least 3 characters long")
+    .max(100, "Location cannot exceed 100 characters"),
+  size: yup
+    .string()
+    .required("Size is required")
+    .matches(/^\d+\s?(sqft|sqm|acres)$/, "Size must be a number followed by a valid unit (e.g., '1200 sqft')"),
+  rentAmount: yup
+    .number()
+    .required("Rent amount is required")
+    .min(1, "Rent amount must be a positive number"),
+  type: yup.string().required("Type is required"),
+  imageFile: yup.mixed().required("Image is required"),
+});
+
+const AddPropertyModal = ({ isModalOpen, setIsModalOpen, refreshProperties }) => {
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm({
+    resolver: yupResolver(schema),
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [cities, setCities] = useState([]); // State for city options
-  const navigate = useNavigate();
+  const [message, setMessage] = useState("");
 
-  // Fetch cities from the backend when the component loads
-  useEffect(() => {
-    const fetchCities = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/api/cities");
-        setCities(response.data); // Assuming response.data is an array of cities
-      } catch (error) {
-        console.error("Error fetching cities:", error);
-      }
-    };
-
-    fetchCities();
-  }, []);
-
-  // Handle form input changes
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: files ? files[0] : value,
-    }));
+  const handleFileChange = (e) => {
+    setValue("imageFile", e.target.files[0]);
   };
 
-  // Handle form step navigation
-  const nextStep = () => setStep((prev) => prev + 1);
-  const prevStep = () => setStep((prev) => prev - 1);
-
-  // Submit Property Registration
-  const handleSubmit = async () => {
+  const onSubmit = async (formData) => {
     setIsLoading(true);
-
     try {
       let imageUrl = "";
       if (formData.imageFile) {
@@ -73,253 +66,129 @@ export function AddPropertyForm() {
         image_url: imageUrl,
       });
 
-      alert("Property registered successfully");
-      navigate("/property");
+      toast.success("Property registered successfully");
+      setMessage("Property added successfully!");
+      setIsModalOpen(false);
+      refreshProperties();
     } catch (error) {
       console.error("Error registering property:", error);
-      alert("There was an error submitting the property. Please try again.");
+      setMessage("Failed to add property.");
+      toast.error("There was an error submitting the property. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex-1 overflow-auto relative z-10">
-      <Header title="Add New Property" />
-      <section className="py-4 bg-gray-900">
-        <div className="px-4 mx-auto max-w-7xl">
-          <div className="relative max-w-6xl mx-auto">
-            <div className="overflow-hidden bg-gray-800 rounded-md shadow-lg p-6">
-              <div className="text-center text-white mb-4">
-                Step {step} of 3
+    isModalOpen && (
+      <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div className="bg-gray-800 text-white rounded-lg shadow-lg p-6 w-full max-w-4xl">
+          <div className="flex justify-between items-center border-b pb-2 mb-4">
+            <h2 className="text-xl font-bold text-gray-200">Add New Property</h2>
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="text-gray-400 hover:text-gray-300 text-xl font-bold"
+            >
+              &times;
+            </button>
+          </div>
+
+          {message && <p className="text-red-500 mb-4">{message}</p>}
+
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-400">Property Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  {...register("name")}
+                  className="bg-gray-800 text-white border border-gray-600 p-3 rounded-md w-full"
+                  placeholder="Enter property name"
+                />
+                {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
               </div>
-
-              {/* Step 1: Basic Information */}
-              {step === 1 && (
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-300">
-                    Basic Information
-                  </h3>
-                  <div className="space-y-4 mt-4">
-                    <div>
-                      <label className="text-gray-300">Upload Image</label>
-                      <input
-                        type="file"
-                        name="imageFile"
-                        onChange={handleChange}
-                        className="block w-full py-2 px-3 bg-gray-700 border border-gray-600 rounded-md text-gray-200"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-gray-300">Name</label>
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="block w-full py-2 px-3 bg-gray-700 border border-gray-600 rounded-md text-gray-200"
-                        placeholder="Property name"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="text-gray-300">Description</label>
-                      <input
-                        type="text"
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                        className="block w-full py-2 px-3 bg-gray-700 border border-gray-600 rounded-md text-gray-200"
-                        placeholder="Property description"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="text-gray-300">Location</label>
-                      <input
-                        type="text"
-                        name="location"
-                        value={formData.location}
-                        onChange={handleChange}
-                        className="block w-full py-2 px-3 bg-gray-700 border border-gray-600 rounded-md text-gray-200"
-                        placeholder="Property location"
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 2: Property Details */}
-              {step === 2 && (
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-300">
-                    Property Details
-                  </h3>
-                  <div className="space-y-4 mt-4">
-                    <div>
-                      <label className="text-gray-300">Square Footage</label>
-                      <input
-                        type="text"
-                        name="square_footage"
-                        value={formData.square_footage}
-                        onChange={handleChange}
-                        className="block w-full py-2 px-3 bg-gray-700 border border-gray-600 rounded-md text-gray-200"
-                        placeholder="Square footage"
-                        required
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-gray-300">Bedrooms</label>
-                        <input
-                          type="number"
-                          name="bedrooms"
-                          value={formData.bedrooms}
-                          onChange={handleChange}
-                          className="block w-full py-2 px-3 bg-gray-700 border border-gray-600 rounded-md text-gray-200"
-                          placeholder="No. of bedrooms"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="text-gray-300">Bathrooms</label>
-                        <input
-                          type="number"
-                          name="bathrooms"
-                          value={formData.bathrooms}
-                          onChange={handleChange}
-                          className="block w-full py-2 px-3 bg-gray-700 border border-gray-600 rounded-md text-gray-200"
-                          placeholder="No. of bathrooms"
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="text-gray-300">Features</label>
-                      <input
-                        type="text"
-                        name="features"
-                        value={formData.features}
-                        onChange={handleChange}
-                        className="block w-full py-2 px-3 bg-gray-700 border border-gray-600 rounded-md text-gray-200"
-                        placeholder="Property features"
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 3: Additional Information */}
-              {step === 3 && (
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-300">
-                    Additional Information
-                  </h3>
-                  <div className="space-y-4 mt-4">
-                    <div>
-                      <label className="text-gray-300">Type</label>
-                      <select
-                        name="type"
-                        value={formData.type}
-                        onChange={handleChange}
-                        className="block w-full py-2 px-3 bg-gray-700 border border-gray-600 rounded-md text-gray-200"
-                        required
-                      >
-                        <option value="House">House</option>
-                        <option value="Apartment">Apartment</option>
-                        <option value="Commercial">Commercial</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-gray-300">Rent Type</label>
-                      <select
-                        name="rent_type"
-                        value={formData.rent_type}
-                        onChange={handleChange}
-                        className="block w-full py-2 px-3 bg-gray-700 border border-gray-600 rounded-md text-gray-200"
-                        required
-                      >
-                        <option value="month">Monthly</option>
-                        <option value="3-month">3-Month</option>
-                        <option value="6-month">6-Month</option>
-                        <option value="9-month">9-Month</option>
-                        <option value="yearly">Yearly</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-gray-300">City</label>
-                      <select
-                        name="city"
-                        value={formData.city}
-                        onChange={handleChange}
-                        className="block w-full py-2 px-3 bg-gray-700 border border-gray-600 rounded-md text-gray-200"
-                        required
-                      >
-                        <option value="">Select City</option>
-                        {cities.map((city) => (
-                          <option key={city.id} value={city.name}>
-                            {city.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-gray-300">rentAmount</label>
-                      <input
-                        type="text"
-                        name="rentAmount"
-                        value={formData.rentAmount}
-                        onChange={handleChange}
-                        className="block w-full py-2 px-3 bg-gray-700 border border-gray-600 rounded-md text-gray-200"
-                        placeholder="rentAmount"
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Navigation Buttons */}
-              <div className="flex justify-between mt-6">
-                {step > 1 && (
-                  <button
-                    type="button"
-                    onClick={prevStep}
-                    className="bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-md"
-                  >
-                    Previous
-                  </button>
-                )}
-                {step < 3 ? (
-                  <button
-                    type="button"
-                    onClick={nextStep}
-                    className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
-                  >
-                    Next
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleSubmit}
-                    className={`bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md ${
-                      isLoading ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Submitting..." : "Submit"}
-                  </button>
-                )}
+              <div>
+                <label className="block text-sm font-medium text-gray-400">Description</label>
+                <input
+                  type="text"
+                  name="description"
+                  {...register("description")}
+                  className="bg-gray-800 text-white border border-gray-600 p-3 rounded-md w-full"
+                  placeholder="Enter property description"
+                />
+                {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400">Location</label>
+                <input
+                  type="text"
+                  name="location"
+                  {...register("location")}
+                  className="bg-gray-800 text-white border border-gray-600 p-3 rounded-md w-full"
+                  placeholder="Enter property location"
+                />
+                {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400">Size</label>
+                <input
+                  type="text"
+                  name="size"
+                  {...register("size")}
+                  className="bg-gray-800 text-white border border-gray-600 p-3 rounded-md w-full"
+                  placeholder="Enter property size"
+                />
+                {errors.size && <p className="text-red-500 text-sm">{errors.size.message}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400">Type</label>
+                <select
+                  name="type"
+                  {...register("type")}
+                  className="bg-gray-800 text-white border border-gray-600 p-3 rounded-md w-full"
+                >
+                  <option value="House">House</option>
+                  <option value="Apartment">Apartment</option>
+                  <option value="Commercial">Commercial</option>
+                </select>
+                {errors.type && <p className="text-red-500 text-sm">{errors.type.message}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400">Rent Amount</label>
+                <input
+                  type="number"
+                  name="rentAmount"
+                  {...register("rentAmount")}
+                  className="bg-gray-800 text-white border border-gray-600 p-3 rounded-md w-full"
+                  placeholder="Enter rent amount"
+                />
+                {errors.rentAmount && <p className="text-red-500 text-sm">{errors.rentAmount.message}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400">Upload Image</label>
+                <input
+                  type="file"
+                  name="imageFile"
+                  onChange={handleFileChange}
+                  className="bg-gray-800 text-white border border-gray-600 p-3 rounded-md w-full"
+                  accept="image/*"
+                />
+                {errors.imageFile && <p className="text-red-500 text-sm">{errors.imageFile.message}</p>}
               </div>
             </div>
-          </div>
+            <button
+              type="submit"
+              className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
+              disabled={isLoading}
+            >
+              {isLoading ? "Adding Property..." : "Add Property"}
+            </button>
+          </form>
         </div>
-      </section>
-    </div>
+      </div>
+    )
   );
-}
+};
 
-export default AddPropertyForm;
+export default AddPropertyModal;

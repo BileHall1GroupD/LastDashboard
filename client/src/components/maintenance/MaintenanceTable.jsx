@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Edit, Trash2 } from 'lucide-react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import AssignContractorModal from './AssignContractorForm';
 import EditMaintenanceModal from './EditMaintenance';
 
@@ -27,6 +29,7 @@ const MaintenanceTable = () => {
       setFilteredRequests(requestData);
     } catch (error) {
       console.error('Error fetching maintenance requests:', error);
+      toast.error('Failed to fetch maintenance requests.');
     }
   };
 
@@ -51,15 +54,14 @@ const MaintenanceTable = () => {
   };
 
   const handleDeleteRequest = async (requestId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this maintenance request?");
-    if (confirmDelete) {
+    if (window.confirm("Are you sure you want to delete this maintenance request?")) {
       try {
         await axios.delete(`http://localhost:3000/api/maintenance/${requestId}`);
         fetchMaintenanceRequests();
-        alert("Maintenance request deleted successfully");
+        toast.success("Maintenance request deleted successfully");
       } catch (error) {
         console.error("Error deleting maintenance request:", error);
-        alert("Failed to delete the maintenance request.");
+        toast.error("Failed to delete the maintenance request.");
       }
     }
   };
@@ -192,6 +194,7 @@ const MaintenanceTable = () => {
         requestId={selectedRequestId}
         refreshData={fetchMaintenanceRequests}
       />
+      <ToastContainer />
     </motion.div>
   );
 };

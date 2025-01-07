@@ -27,7 +27,7 @@ const uploadResult = await cloudinary.uploader.upload(
   "https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg",
   { public_id: "property" }
 );
-const port = 3000;
+const port = 9000;
 const app = express();
 
 app.use(cors());
@@ -71,6 +71,6 @@ app.use('/api',useReport)
 
 
 app.listen(port, () => {
-  connectDb("mongodb://localhost:27017/property_managemant");
+  connectDb("mongodb://localhost:27017/Node-js");
   console.log(`Server is running on port ${port}`);
 });

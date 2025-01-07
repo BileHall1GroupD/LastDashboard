@@ -38,23 +38,23 @@ const GenerateReport = () => {
     };
 
     return (
-        <div className="p-6 bg-gray-100 min-h-screen" style={{ filter: 'none', position: 'relative', zIndex: 10 }}>
-            <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-lg" ref={reportRef} style={{ filter: 'none', zIndex: 10, position: 'relative' }}>
+        <div className="p-6 bg-gray-900 min-h-screen text-gray-300 " style={{ filter: 'none', position: 'relative', zIndex: 10 }}>
+            <div className="max-w-7xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg" ref={reportRef}>
                 <div className="flex justify-between mb-8">
                     <div>
-                        <h1 className="text-2xl font-bold text-indigo-700">Maintenance Report</h1>
-                        <p className="text-gray-500">Company Address: Hodan District </p>
-                        <p className="text-gray-500">Phone: +252 0613775927</p>
-                        <p className="text-blue-500">Email: Tabarak@gmail.com</p>
+                        <h1 className="text-2xl font-bold text-gray-400">Maintenance Report</h1>
+                        <p className="text-gray-400">Company Address: Hodan District</p>
+                        <p className="text-gray-400">Phone: +252 0613775927</p>
+                        <p className="text-gray-400">Email: Group8@gmail.com</p>
                     </div>
                     <div className="text-right">
-                        <p className="text-indigo-700">Report Date: {new Date().toLocaleDateString()}</p>
-                        <p className="text-indigo-700">Total Requests: {requests.length}</p>
+                        <p className="text-gray-400">Report Date: {new Date().toLocaleDateString()}</p>
+                        <p className="text-gray-400">Total Requests: {requests.length}</p>
                     </div>
                 </div>
 
-                <table className="w-full text-left border border-gray-300">
-                    <thead className="bg-gray-200 text-indigo-700">
+                <table className="w-full text-left border border-gray-700 rounded-lg overflow-hidden">
+                    <thead className="bg-gray-700 text-gray-400">
                         <tr>
                             <th className="px-4 py-2">Tenant</th>
                             <th className="px-4 py-2">Status</th>
@@ -67,13 +67,13 @@ const GenerateReport = () => {
                     <tbody>
                         {requests.length > 0 ? (
                             requests.map((request, index) => (
-                                <tr key={request._id} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}>
-                                    <td className="px-4 py-2 border-t border-gray-300 text-gray-700">{request.tenantId?.name || 'N/A'}</td>
-                                    <td className="px-4 py-2 border-t border-gray-300 text-gray-700">{request.status}</td>
-                                    <td className="px-4 py-2 border-t border-gray-300 text-gray-700">{request.priority}</td>
-                                    <td className="px-4 py-2 border-t border-gray-300 text-gray-700">{new Date(request.requestDate).toLocaleDateString()}</td>
-                                    <td className="px-4 py-2 border-t border-gray-300 text-gray-700">{request.assignmentDate ? new Date(request.assignmentDate).toLocaleDateString() : 'N/A'}</td>
-                                    <td className="px-4 py-2 border-t border-gray-300 text-gray-700">{request.description}</td>
+                                <tr key={request._id} className={index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-700'}>
+                                    <td className="px-4 py-2 border-t border-gray-600">{request.tenantId?.name || 'N/A'}</td>
+                                    <td className="px-4 py-2 border-t border-gray-600">{request.status}</td>
+                                    <td className="px-4 py-2 border-t border-gray-600">{request.priority}</td>
+                                    <td className="px-4 py-2 border-t border-gray-600">{new Date(request.requestDate).toLocaleDateString()}</td>
+                                    <td className="px-4 py-2 border-t border-gray-600">{request.assignmentDate ? new Date(request.assignmentDate).toLocaleDateString() : 'N/A'}</td>
+                                    <td className="px-4 py-2 border-t border-gray-600">{request.description}</td>
                                 </tr>
                             ))
                         ) : (

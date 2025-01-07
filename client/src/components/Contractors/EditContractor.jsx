@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import Header from '../common/Header';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export function EditContractorForm() {
   const [formState, setFormState] = useState({
@@ -53,11 +55,11 @@ export function EditContractorForm() {
         ...formState,
         skills: formState.skills.split(',').map(skill => skill.trim()),
       });
-      alert('Contractor updated successfully');
+      toast.success('Contractor updated successfully');
       navigate('/Contactors');
     } catch (error) {
       console.error('Error updating contractor:', error);
-      alert('Failed to update contractor.');
+      toast.error('Failed to update contractor.');
     }
   };
 
@@ -77,7 +79,6 @@ export function EditContractorForm() {
           <div className="relative max-w-4xl mx-auto mt-4 bg-gray-800 rounded-md shadow-md p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Name Field */}
                 <div>
                   <label className="text-sm font-medium text-gray-400 mb-2 block">Name</label>
                   <input
@@ -91,7 +92,6 @@ export function EditContractorForm() {
                   />
                 </div>
 
-                {/* Phone Field */}
                 <div>
                   <label className="text-sm font-medium text-gray-400 mb-2 block">Phone Number</label>
                   <input
@@ -105,7 +105,6 @@ export function EditContractorForm() {
                   />
                 </div>
 
-                {/* Email Field */}
                 <div>
                   <label className="text-sm font-medium text-gray-400 mb-2 block">Email</label>
                   <input
@@ -119,7 +118,6 @@ export function EditContractorForm() {
                   />
                 </div>
 
-                {/* Skills Field */}
                 <div>
                   <label className="text-sm font-medium text-gray-400 mb-2 block">Skills</label>
                   <input
@@ -132,7 +130,6 @@ export function EditContractorForm() {
                   />
                 </div>
 
-                {/* Availability Field */}
                 <div>
                   <label className="text-sm font-medium text-gray-400 mb-2 block">Available</label>
                   <select
@@ -160,6 +157,7 @@ export function EditContractorForm() {
           </div>
         </div>
       </section>
+      <ToastContainer />
     </div>
   );
 }

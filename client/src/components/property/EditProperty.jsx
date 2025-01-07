@@ -1,31 +1,22 @@
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../common/Header";
-
-
 
 export function EditProperty() {
   const [formState, setFormState] = useState({
     name: "",
     description: "",
     location: "",
-    squareFootage: "",
-    bedrooms: 0,
-    bathrooms: 0,
-    features: "",
+    size: "",
     imageUrl: "",
     type: "House",
-    city: "",
-    neighborhood: "",
   });
   const [imageFile, setImageFile] = useState(null);
-  const [cities, setCities] = useState([]); // New state to hold cities
   const navigate = useNavigate();
   const { id } = useParams();
 
-  // Fetch the property details and cities on component mount
+  // Fetch the property details and populate the form
   useEffect(() => {
     if (id) {
       axios
@@ -36,43 +27,27 @@ export function EditProperty() {
             name: data.name,
             description: data.description,
             location: data.location,
-            squareFootage: data.square_footage,
-            bedrooms: data.bedrooms,
-            bathrooms: data.bathrooms,
-            features: data.features,
+            size: data.size,
             imageUrl: data.image_url,
             type: data.type,
-            city: data.city,
-            neighborhood: data.neighborhood,
           });
         })
         .catch((error) => {
           console.error("Error fetching property:", error);
         });
     }
-
-    // Fetch cities for dropdown
-    axios
-      .get("http://localhost:3000/api/cities")
-      .then((response) => {
-        setCities(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching cities:", error);
-      });
   }, [id]);
 
+  // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormState((prevState) => ({
       ...prevState,
-      [name]:
-        name === "bedrooms" || name === "bathrooms"
-          ? parseInt(value) || 0
-          : value,
+      [name]: value,
     }));
   };
 
+  // Upload image to Cloudinary
   const uploadImageToCloudinary = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
@@ -90,6 +65,7 @@ export function EditProperty() {
     }
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -99,7 +75,7 @@ export function EditProperty() {
       }
       await axios.put(`http://localhost:3000/api/property/${id}`, {
         ...formState,
-        square_footage: formState.squareFootage,
+        size: formState.size,
         image_url: imageUrl,
       });
       alert("Property updated successfully");
@@ -118,8 +94,7 @@ export function EditProperty() {
             <div className="relative max-w-4xl mx-auto mt-4 bg-gray-800 rounded-md shadow-md p-8">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[
-                    {
+                  {[{
                       label: "Name",
                       name: "name",
                       type: "text",
@@ -138,35 +113,11 @@ export function EditProperty() {
                       placeholder: "Property location",
                     },
                     {
-                      label: "Square Footage",
-                      name: "squareFootage",
+                      label: "Size",
+                      name: "size",
                       type: "text",
-                      placeholder: "Square footage",
-                    },
-                    {
-                      label: "Bedrooms",
-                      name: "bedrooms",
-                      type: "number",
-                      placeholder: "No. of bedrooms",
-                    },
-                    {
-                      label: "Bathrooms",
-                      name: "bathrooms",
-                      type: "number",
-                      placeholder: "No. of bathrooms",
-                    },
-                    {
-                      label: "Features",
-                      name: "features",
-                      type: "text",
-                      placeholder: "Property features",
-                    },
-                    {
-                      label: "Neighborhood",
-                      name: "neighborhood",
-                      type: "text",
-                      placeholder: "Neighborhood (optional)",
-                    },
+                      placeholder: "Size",
+                    }
                   ].map(({ label, name, type, placeholder }) => (
                     <div key={name} className="col-span-1">
                       <label className="text-sm font-medium text-gray-400 mb-2 block">
@@ -179,7 +130,7 @@ export function EditProperty() {
                         onChange={handleInputChange}
                         placeholder={placeholder}
                         className="w-full py-2 px-3 text-gray-300 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
-                        required={name !== "neighborhood"}
+                        required
                       />
                     </div>
                   ))}
@@ -202,31 +153,10 @@ export function EditProperty() {
                     </select>
                   </div>
 
-                  {/* City Select Dropdown */}
-                  <div className="col-span-1">
-                    <label className="text-sm font-medium text-gray-400 mb-2 block">
-                      City
-                    </label>
-                    <select
-                      name="city"
-                      value={formState.city}
-                      onChange={handleInputChange}
-                      className="w-full py-2 px-3 text-gray-300 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
-                      required
-                    >
-                      <option value="">Select City</option>
-                      {cities.map((city) => (
-                        <option key={city.id} value={city.name}>
-                          {city.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
                   {/* Image File Input */}
                   <div className="col-span-1">
                     <label className="text-sm font-medium text-gray-400 mb-2 block">
-                      Upload New Image
+                      Update Image
                     </label>
                     <input
                       type="file"
@@ -241,7 +171,7 @@ export function EditProperty() {
                     type="submit"
                     className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none"
                   >
-                    Update Property
+                    Update
                   </button>
                 </div>
               </form>

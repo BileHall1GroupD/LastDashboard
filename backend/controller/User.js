@@ -3,6 +3,14 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key_here';
+export const allUsers =async(req,res)=>{
+    try {
+        const users =await User.find();
+        res.status(200).json({data:users})
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 export const registerUser = async (req, res) => {
     try {
