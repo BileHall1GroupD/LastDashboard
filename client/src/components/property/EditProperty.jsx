@@ -3,6 +3,13 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../common/Header";
 
+<<<<<<< HEAD
+=======
+
+
+
+
+>>>>>>> b01654e243a7d04177f26157e425853d39c1608c
 export function EditProperty() {
   const [formState, setFormState] = useState({
     name: "",

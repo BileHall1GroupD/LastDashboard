@@ -47,6 +47,11 @@ const SIDEBAR_ITEMS = [
       { name: "Maintenance Report", href: "/Report" },
     ],
   },
+
+
+  { name: "Report", icon: Settings, color: "#6EE7B7", href: "/Report" },
+
+
 ];
 
 const Sidebar = () => {

@@ -101,6 +101,12 @@ const CityTable = () => {
                     City Name
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    State
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    Postcode
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -115,6 +121,12 @@ const CityTable = () => {
                   >
                     <td className="px-6 py-4 text-sm text-gray-300">
                       {city.name}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-300">
+                      {city.state}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-300">
+                      {city.postcode}
                     </td>
                     <td className="px-6 py-4 flex gap-2">
                       <button
