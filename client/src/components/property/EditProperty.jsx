@@ -87,7 +87,7 @@ export function EditProperty() {
   return (
     <div className="flex-1 overflow-auto relative z-10">
       <Header title="Edit Property" />
-      <section className="py-4 bg-gray-900">
+      <section className="py-4 bg-gray-800">
         <div className="px-4 mx-auto max-w-7xl">
           <div className="relative max-w-6xl mx-auto">
             <div className="relative max-w-4xl mx-auto mt-4 bg-gray-800 rounded-md shadow-md p-8">

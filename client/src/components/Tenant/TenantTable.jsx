@@ -115,9 +115,8 @@ const TenantTable = () => {
                   <th className="w-1/8 px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Name</th>
                   <th className="w-1/8 px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Property Name</th>
                   <th className="w-1/8 px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Address</th>
-                  <th className="w-1/8 px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Lease Start</th>
-                  <th className="w-1/8 px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Lease End</th>
-                  <th className="w-1/8 px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Payment Status</th>
+                  <th className="w-1/8 px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Phone</th>
+                  <th className="w-1/8 px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Email</th>
                   <th className="w-1/12 px-4 py-3 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
@@ -133,13 +132,8 @@ const TenantTable = () => {
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">{tenant.name}</td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">{tenant.property?.name || 'N/A'}</td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">{tenant.address}</td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">
-                      {tenant.lease.startDate ? new Date(tenant.lease.startDate).toLocaleDateString() : 'N/A'}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">
-                      {tenant.lease.endDate ? new Date(tenant.lease.endDate).toLocaleDateString() : 'N/A'}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">{tenant.paymentStatus}</td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">{tenant.phoneNumber}</td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">{tenant.email}</td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300 text-center flex gap-2">
                       <button
                         className="text-indigo-400 hover:text-indigo-300"

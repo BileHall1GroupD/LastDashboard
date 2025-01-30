@@ -1,6 +1,7 @@
 import MaintenanceRequest from '../model/maintainance.js';
 import { sendSms } from '../utilities/Sms.js';
 import Contractor from '../model/contracts.js';
+import nodemailer from 'nodemailer';
 
 // Create a new maintenance request (for tenants to submit requests)
 export const createMaintenanceRequest = async (req, res) => {
@@ -22,40 +23,56 @@ export const createMaintenanceRequest = async (req, res) => {
     }
 };
 
-// Assign a contractor to the maintenance request and send SMS
+
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false, 
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+});
+
+
+
 export const assignContractorToRequest = async (req, res) => {
     try {
         const { id } = req.params;
         const { contractorId, assignmentDate } = req.body;
 
-        // Find the maintenance request by ID and populate tenant details
         const maintenanceRequest = await MaintenanceRequest.findById(id).populate('tenantId');
         if (!maintenanceRequest) {
             return res.status(404).json({ message: 'Maintenance request not found' });
         }
 
-        // Update contractor details and status
+        const contractor = await Contractor.findById(contractorId);
+        const tenant = maintenanceRequest.tenantId;
+
+        if (!contractor || !tenant) {
+            return res.status(404).json({ message: 'Contractor or Tenant not found' });
+        }
+
         maintenanceRequest.contractorId = contractorId;
         maintenanceRequest.assignmentDate = assignmentDate || new Date();
         maintenanceRequest.status = 'In Progress';
         await maintenanceRequest.save();
 
-        // Fetch the contractor's and tenant's details
-        const contractor = await Contractor.findById(contractorId);
-        const tenant = maintenanceRequest.tenantId;
-        if (!contractor || !tenant) {
-            return res.status(404).json({ message: 'Contractor or Tenant not found' });
-        }
+        await sendSms(contractor.phone, `You have been assigned...`);
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: contractor.email,
+            subject: 'New Maintenance Request Assigned',
+            text: `Hello ${contractor.name}, You have been assigned...`,
+        });
 
-        // Prepare and send SMS to the contractor
-        const smsContent = `You have been assigned to a new maintenance request. Details: ${maintenanceRequest.description}. Tenant Phone: ${tenant.phoneNumber}. Tenant Location: ${tenant.address}.`;
-        await sendSms(contractor.phone, smsContent);
-
-        res.status(200).json({ message: 'Contractor assigned successfully and notified via SMS', data: maintenanceRequest });
+        res.status(200).json({ message: 'Contractor assigned successfully', data: maintenanceRequest });
     } catch (error) {
+        console.error("Error assigning contractor:", error);
         res.status(500).json({ message: 'Failed to assign contractor', error: error.message });
     }
 };
+
 
 // Update a maintenance request by ID
 export const updateMaintenanceRequest = async (req, res) => {

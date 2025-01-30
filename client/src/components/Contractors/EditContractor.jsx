@@ -4,6 +4,24 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Header from '../common/Header';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+
+const validationSchema = Yup.object({
+  name: Yup.string()
+    .matches(/^[A-Za-z][A-Za-z0-9\s]*$/, 'Name must start with a letter')
+    .required('Name is required'),
+  email: Yup.string()
+    .email('Invalid email format')
+    .required('Email is required'),
+  phone: Yup.string()
+    .matches(/^[0-9]{10}$/, 'Phone must be a 10-digit number')
+    .required('Phone number is required'),
+  skills: Yup.string()
+    .matches(/^[A-Za-z][A-Za-z0-9\s]*$/, 'Invalid skill')
+    .required('Skills are required'),
+  available: Yup.boolean().required('Availability is required'),
+});
 
 export function EditContractorForm() {
   const [formState, setFormState] = useState({
@@ -40,20 +58,11 @@ export function EditContractorForm() {
     }
   }, [id]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormState((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (values) => {
     try {
       await axios.put(`http://localhost:3000/api/contractors/${id}`, {
-        ...formState,
-        skills: formState.skills.split(',').map(skill => skill.trim()),
+        ...values,
+        skills: values.skills.split(',').map(skill => skill.trim()),
       });
       toast.success('Contractor updated successfully');
       navigate('/Contactors');
@@ -77,83 +86,77 @@ export function EditContractorForm() {
       <section className="py-4 bg-gray-900">
         <div className="px-4 mx-auto max-w-7xl">
           <div className="relative max-w-4xl mx-auto mt-4 bg-gray-800 rounded-md shadow-md p-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-sm font-medium text-gray-400 mb-2 block">Name</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formState.name}
-                    onChange={handleInputChange}
-                    placeholder="Contractor name"
-                    className="w-full py-2 px-3 text-gray-300 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
-                    required
-                  />
+            <Formik
+              initialValues={formState}
+              validationSchema={validationSchema}
+              onSubmit={handleSubmit}
+            >
+              <Form className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="text-sm font-medium text-gray-400 mb-2 block">Name</label>
+                    <Field
+                      type="text"
+                      name="name"
+                      placeholder="Contractor name"
+                      className="w-full py-2 px-3 text-gray-300 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
+                    />
+                    <ErrorMessage name="name" component="div" className="text-red-600 text-sm" />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-400 mb-2 block">Phone Number</label>
+                    <Field
+                      type="text"
+                      name="phone"
+                      placeholder="Phone number"
+                      className="w-full py-2 px-3 text-gray-300 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
+                    />
+                    <ErrorMessage name="phone" component="div" className="text-red-600 text-sm" />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-400 mb-2 block">Email</label>
+                    <Field
+                      type="email"
+                      name="email"
+                      placeholder="Contractor email"
+                      className="w-full py-2 px-3 text-gray-300 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
+                    />
+                    <ErrorMessage name="email" component="div" className="text-red-600 text-sm" />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-400 mb-2 block">Skills</label>
+                    <Field
+                      type="text"
+                      name="skills"
+                      placeholder="Skills (comma-separated)"
+                      className="w-full py-2 px-3 text-gray-300 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
+                    />
+                    <ErrorMessage name="skills" component="div" className="text-red-600 text-sm" />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-400 mb-2 block">Available</label>
+                    <Field as="select" name="available" className="w-full py-2 px-3 text-gray-300 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500">
+                      <option value="true">Yes</option>
+                      <option value="false">No</option>
+                    </Field>
+                    <ErrorMessage name="available" component="div" className="text-red-600 text-sm" />
+                  </div>
                 </div>
 
-                <div>
-                  <label className="text-sm font-medium text-gray-400 mb-2 block">Phone Number</label>
-                  <input
-                    type="text"
-                    name="phone"
-                    value={formState.phone}
-                    onChange={handleInputChange}
-                    placeholder="Phone number"
-                    className="w-full py-2 px-3 text-gray-300 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-gray-400 mb-2 block">Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formState.email}
-                    onChange={handleInputChange}
-                    placeholder="Contractor email"
-                    className="w-full py-2 px-3 text-gray-300 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-gray-400 mb-2 block">Skills</label>
-                  <input
-                    type="text"
-                    name="skills"
-                    value={formState.skills}
-                    onChange={handleInputChange}
-                    placeholder="Skills (comma-separated)"
-                    className="w-full py-2 px-3 text-gray-300 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-gray-400 mb-2 block">Available</label>
-                  <select
-                    name="available"
-                    value={formState.available}
-                    onChange={handleInputChange}
-                    className="w-full py-2 px-3 text-gray-300 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
-                    required
+                <div className="flex justify-end mt-6">
+                  <button
+                    type="submit"
+                    className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none"
                   >
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
-                  </select>
+                    Update Contractor
+                  </button>
                 </div>
-              </div>
-
-              <div className="flex justify-end mt-6">
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none"
-                >
-                  Update Contractor
-                </button>
-              </div>
-            </form>
+              </Form>
+            </Formik>
           </div>
         </div>
       </section>

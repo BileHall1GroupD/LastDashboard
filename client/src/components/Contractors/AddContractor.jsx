@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../common/Header';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import * as Yup from 'yup'; // Import Yup for validation
 
 export function AddContractor() {
     const [step, setStep] = useState(1);
@@ -16,6 +17,23 @@ export function AddContractor() {
     });
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+
+    // Define Yup validation schema
+    const validationSchema = Yup.object({
+        name: Yup.string()
+            .matches(/^[A-Za-z][A-Za-z0-9\s]*$/, 'Name must start with a letter')
+            .required('Name is required'),
+        email: Yup.string()
+            .email('Invalid email format')
+            .required('Email is required'),
+        phone: Yup.string()
+            .matches(/^[0-9]{10}$/, 'Phone must be a 10-digit number')
+            .required('Phone number is required'),
+        skills: Yup.string()
+            .matches(/^[A-Za-z][A-Za-z0-9\s]*$/, 'invalid skill ')
+            .required('Skills are required'),
+        available: Yup.boolean().required('Availability is required'),
+    });
 
     // Handle form field changes
     const handleChange = (e) => {
@@ -31,38 +49,27 @@ export function AddContractor() {
     // Navigate to previous step
     const prevStep = () => setStep((prev) => prev - 1);
 
-    // Form validation
-    const validateForm = () => {
-        const nameRegex = /^[A-Za-z][A-Za-z0-9\s]*$/; // Name must start with a letter, can include numbers or spaces
-        const skillsRegex = /^[A-Za-z][A-Za-z0-9\s]*$/; // Skills must start with a letter, can include numbers or spaces
-
-        if (!nameRegex.test(formData.name)) {
-            toast.error('Name must start with a letter and may include numbers or spaces.');
+    // Validate form data using Yup
+    const validateForm = async () => {
+        try {
+            await validationSchema.validate(formData, { abortEarly: false });
+            return true;
+        } catch (error) {
+            error.inner.forEach((err) => toast.error(err.message)); // Display validation errors
             return false;
         }
-
-        if (!skillsRegex.test(formData.skills)) {
-            toast.error('Skills must start with a letter and may include numbers or spaces.');
-            return false;
-        }
-
-        return true;
     };
 
     // Handle form submission
     const handleSubmit = async () => {
-        if (!validateForm()) {
-            return; // Stop submission if validation fails
-        }
+        const isValid = await validateForm();
+        if (!isValid) return; // Stop submission if validation fails
 
         setIsLoading(true);
         try {
-            await axios.post('http://localhost:3000/api/contractors', {
-                ...formData,
-            });
-
+            await axios.post('http://localhost:3000/api/contractors', { ...formData });
             toast.success('Contractor registered successfully');
-            navigate('/Contractors');
+            navigate('/contactorsTable');
         } catch (error) {
             console.error('Error registering contractor:', error);
             toast.error('There was an error submitting the contractor. Please try again.');

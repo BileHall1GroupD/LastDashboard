@@ -1,13 +1,12 @@
 import mongoose from "mongoose";
 const maintenanceRequestSchema = new mongoose.Schema({
-    tenantId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Tenant', 
-        required: true,
-    },
+
+    tenantId: { type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Tenant', required: true },
+
     propertyId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Property', 
+        ref: 'Property',
         required: true,
     },
     description: {
@@ -31,7 +30,7 @@ const maintenanceRequestSchema = new mongoose.Schema({
     },
     contractorId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Contractor', 
+        ref: 'Contractor',
     },
     assignmentDate: {
         type: Date,

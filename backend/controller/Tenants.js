@@ -45,10 +45,7 @@ export const getTenantById = async (req, res) => {
 // Update tenant by ID
 export const updateTenant = async (req, res) => {
   try {
-    const tenant = await Tenant.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+   const tenant=await Tenant.findByIdAndUpdate(req.params.id,req.Body)
     if (!tenant) return res.status(404).json({ message: 'Tenant not found' });
     res.status(200).json({ message: 'Tenant updated successfully', tenant });
   } catch (error) {
@@ -70,7 +67,7 @@ export const declineTenantLease = async (req, res) => {
     // Prepare SMS content
     const smsContent = `Dear ${tenant.name}, your lease has been declined. Please contact property management for further details.`;
 
-    // Send SMS notification
+    // Send SMS notification0
     await sendSms(tenant.phoneNumber, smsContent); // Ensure tenant has a phoneNumber field
 
     res.status(200).json({ message: 'Lease declined successfully', tenant });

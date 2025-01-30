@@ -63,7 +63,7 @@ const EditMaintenance = ({ show, closeModal, requestId, refreshData }) => {
 
   return (
     <>
-      <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 p-4">
+      <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 p-4 min-h-screen">
         <div className="bg-gray-800 text-white rounded-lg shadow-lg p-8 max-w-md w-full relative">
           <button onClick={closeModal} className="absolute top-2 right-2 text-gray-400 hover:text-gray-200">
             &times;

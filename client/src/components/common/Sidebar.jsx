@@ -31,25 +31,9 @@ const SIDEBAR_ITEMS = [
     href: "/dashboard",
   },
   { name: "Property", icon: IoHome , color: "#8B5CF6", href: "/property" },
-  { name: "City", icon: FaUsers, color: "#EC4899", href: "/City" },
   { name: "Tenants", icon: MdOutlineFamilyRestroom, color: "#10B981", href: "/Tenants" },
   { name: "Contactors", icon: MdOutlineMiscellaneousServices , color: "#F59E0B", href: "/Contactors" },
   { name: "Maintenance", icon: MdOutlineDisabledByDefault , color: "#3B82F6", href: "/maintenance" },
-  { name: "Users", icon: FaUsers, color: "#EC4899", href: "/Users" },
-
-  {
-    name: "Report",
-    icon: FileText,
-    color: "#6EE7B7",
-    href: "/Report",
-    submenu: [
-      { name: "Tenant Report", href: "/TenantsHistory" },
-      { name: "Maintenance Report", href: "/Report" },
-    ],
-  },
-
-
-  { name: "Report", icon: Settings, color: "#6EE7B7", href: "/Report" },
 
 
 ];

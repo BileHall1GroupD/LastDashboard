@@ -86,7 +86,7 @@ export const getProperties = async (req, res) => {
 // Get rented properties
 export const getRentedProperties = async (req, res) => {
   try {
-    const properties = await Property.find({ isRented: true });
+    const properties = await Property.find({ isRented: false });
     res.status(200).json(properties);
   } catch (error) {
     console.error("Error fetching rented properties:", error);
@@ -111,24 +111,16 @@ export const getPropertyById = async (req, res) => {
   }
 };
 
-// Update property by ID
-export const updateProperty = async (req, res) => {
+// Update property by ID  // 
+export const updateProperty = async(req, res) => {
   try {
-    const { id } = req.params;
-    const updatedData = req.body;
-
-    const updatedProperty = await Property.findByIdAndUpdate(id, updatedData, { new: true });
-    if (!updatedProperty) {
-      return res.status(404).json({ message: "Property not found" });
-    }
-
-    res.status(200).json({ message: "Property updated successfully", data: updatedProperty });
-  } catch (error) {
-    console.error("Error updating property:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
+  const {id}= req.params;
+  const updatedata = req.body;
+  const updatedproperty = await Property.findByIdAndUpdate(id,updatedata,{new:true})
+  } catch(error) {
+    res.status(500).json({message:"server error"})
   }
-};
-
+}
 // Delete property by ID
 export const deleteProperty = async (req, res) => {
   try {
